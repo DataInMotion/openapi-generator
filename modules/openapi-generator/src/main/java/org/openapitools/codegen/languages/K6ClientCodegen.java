@@ -195,10 +195,10 @@ public class K6ClientCodegen extends DefaultCodegen implements CodegenConfig {
 
                     @SuppressWarnings("unchecked")
                     Set<String> exampleValues = ((Map<String, Example>) rawValue).values().stream()
-                    .map(x -> quoteExample(
-                            StringEscapeUtils.escapeEcmaScript(
-                                    String.valueOf(x.getValue()))))
-                    .collect(Collectors.toCollection(() -> new TreeSet<String>()));
+                            .map(x -> quoteExample(
+                                    StringEscapeUtils.escapeEcmaScript(
+                                            String.valueOf(x.getValue()))))
+                            .collect(Collectors.toCollection(TreeSet::new));
 
                     if (!exampleValues.isEmpty()) {
 
@@ -316,7 +316,7 @@ public class K6ClientCodegen extends DefaultCodegen implements CodegenConfig {
                 DataExtractSubstituteParameter dataExtract) {
             // NOTE: https://k6.io/docs/javascript-api/k6-http/del-url-body-params
             this.method = method.equals("delete") ? "del" : method;
-            this.isDelete = method.equals("delete") ? true : false;
+            this.isDelete = method.equals("delete");
             this.path = path;
             this.query = query;
             this.body = body;
@@ -350,7 +350,7 @@ public class K6ClientCodegen extends DefaultCodegen implements CodegenConfig {
         }
 
         private List<HTTPRequest> sortRequests(Map<Integer, HTTPRequest> requestsMap) {
-            return new ArrayList<>(new TreeMap<Integer, HTTPRequest>(requestsMap).values());
+            return new ArrayList<>(new TreeMap<>(requestsMap).values());
         }
     }
 
@@ -363,7 +363,7 @@ public class K6ClientCodegen extends DefaultCodegen implements CodegenConfig {
     public static final String BASE_URL = "baseURL";
     public static final String PRESERVE_LEADING_PARAM_CHAR = "preserveLeadingParamChar";
     static final Collection<String> INVOKER_PKG_SUPPORTING_FILES = Arrays.asList("script.mustache", "README.mustache");
-    static final String[][] JAVASCRIPT_SUPPORTING_FILES = new String[][]{
+    static final String[][] JAVASCRIPT_SUPPORTING_FILES = {
             new String[]{"script.mustache", "script.js"}, new String[]{"README.mustache", "README.md"}};
 
     protected String projectName;
@@ -508,7 +508,7 @@ public class K6ClientCodegen extends DefaultCodegen implements CodegenConfig {
                 List<Parameter> queryParams = new ArrayList<>();
                 List<Parameter> bodyOrFormParams = new ArrayList<>();
                 List<k6Check> k6Checks = new ArrayList<>();
-                Set<String> imports = new HashSet<String>();
+                Set<String> imports = new HashSet<>();
 
                 final Operation operation = methodOperation.getValue();
                 final PathItem.HttpMethod method = methodOperation.getKey();
@@ -546,7 +546,7 @@ public class K6ClientCodegen extends DefaultCodegen implements CodegenConfig {
                 if (hasBodyParameter(openAPI, operation) || hasFormParameter(openAPI, operation)) {
                     String defaultContentType = hasFormParameter(openAPI, operation) ? "application/x-www-form-urlencoded" : "application/json";
                     List<String> consumes = new ArrayList<>(getConsumesInfo(openAPI, operation));
-                    String contentTypeValue = consumes == null || consumes.isEmpty() ? defaultContentType : consumes.get(0);
+                    String contentTypeValue = consumes.isEmpty() ? defaultContentType : consumes.get(0);
                     if (contentTypeValue.equals("*/*"))
                         contentTypeValue = "application/json";
                     Parameter contentType = new Parameter("Content-Type", getDoubleQuotedString(contentTypeValue));
@@ -635,7 +635,7 @@ public class K6ClientCodegen extends DefaultCodegen implements CodegenConfig {
                         }
                     }
                 } catch (NullPointerException e) {
-
+                    LOGGER.error("{}", e.getMessage(), e);
                 }
 
                 pathVariables.put(groupName, variables);
@@ -656,7 +656,7 @@ public class K6ClientCodegen extends DefaultCodegen implements CodegenConfig {
                         queryParams.size() > 0 ? queryParams : null,
                         bodyOrFormParams.size() > 0 ? new HTTPBody(bodyOrFormParams) : null, hasRequestBodyExample,
                         params.headers.size() > 0 ? params : null, k6Checks.size() > 0 ? k6Checks : null,
-                        dataExtract.isPresent() ? dataExtract.get() : null));
+                        dataExtract.orElse(null)));
             }
 
             addOrUpdateRequestGroup(requestGroups, groupName, pathVariables.get(groupName), requests);
@@ -895,11 +895,6 @@ public class K6ClientCodegen extends DefaultCodegen implements CodegenConfig {
     /**
      * We're iterating over paths but grouping requests across paths, therefore
      * these need to be aggregated.
-     *
-     * @param requestGroups
-     * @param groupName
-     * @param variables
-     * @param requests
      */
     private void addOrUpdateRequestGroup(Map<String, HTTPRequestGroup> requestGroups, String groupName,
             Set<Parameter> variables, Map<Integer, HTTPRequest> requests) {
@@ -915,9 +910,6 @@ public class K6ClientCodegen extends DefaultCodegen implements CodegenConfig {
     /**
      * If `X_OPERATION_DATAEXTRACT` K6 vendor extension is present, extract info
      * from it.
-     *
-     * @param openAPI
-     * @return
      */
     private Map<String, DataExtractSubstituteParameter> getDataExtractSubstituteParameters(OpenAPI openAPI) {
         Map<String, DataExtractSubstituteParameter> dataExtractSubstituteParams = new HashMap<>();
@@ -1045,8 +1037,7 @@ public class K6ClientCodegen extends DefaultCodegen implements CodegenConfig {
 
             for (Map.Entry<?, ?> respExtensionEntry : respExtensions.entrySet()) {
 
-                switch (String.valueOf(respExtensionEntry.getKey())) {
-                case X_OPERATION_RESPONSE_HIDE:
+                if (X_OPERATION_RESPONSE_HIDE.equals(String.valueOf(respExtensionEntry.getKey()))) {
                     hideOperationResponse = Boolean.valueOf(respExtensionEntry.getValue().toString());
                     continue;
                 }
@@ -1058,10 +1049,6 @@ public class K6ClientCodegen extends DefaultCodegen implements CodegenConfig {
 
     /**
      * Check if example is present for given request body and content type.
-     *
-     * @param requestBody
-     * @param contentTypeValue
-     * @return true if present, false otherwise
      */
     private boolean hasRequestBodyExample(RequestBody requestBody, String contentTypeValue) {
         return (Objects.nonNull(requestBody.getContent()) && requestBody.getContent().containsKey(contentTypeValue)
@@ -1071,10 +1058,6 @@ public class K6ClientCodegen extends DefaultCodegen implements CodegenConfig {
 
     /**
      * Extract example for given request body.
-     *
-     * @param requestBody
-     * @param contentTypeValue
-     * @param bodyOrFormParams
      */
     private void extractRequestBodyExample(RequestBody requestBody, String contentTypeValue,
             List<Parameter> bodyOrFormParams) {
@@ -1111,17 +1094,12 @@ public class K6ClientCodegen extends DefaultCodegen implements CodegenConfig {
 
     /**
      * Calculate order for this current request
-     *
-     * @param operationGroupingOrder
-     * @param requests
-     * @return request order
      */
     private Integer calculateRequestOrder(OptionalInt operationGroupingOrder, int requestsSize) {
-        int requestOrder = 0;
+        int requestOrder;
 
         if (operationGroupingOrder.isPresent()) {
-            requestOrder = Integer.valueOf(operationGroupingOrder.getAsInt() - 1);
-
+            requestOrder = operationGroupingOrder.getAsInt() - 1;
         } else {
             switch (requestsSize) {
             case 0:
@@ -1135,16 +1113,13 @@ public class K6ClientCodegen extends DefaultCodegen implements CodegenConfig {
             }
         }
 
-        return Integer.valueOf(requestOrder);
+        return requestOrder;
     }
 
     //
     /**
      * Any variables not defined yet but used for subsequent data extraction must be
      * initialized
-     *
-     * @param dataExtractSubstituteParams
-     * @param requestGroup
      */
     private void initializeDataExtractSubstituteParameters(
             Map<String, DataExtractSubstituteParameter> dataExtractSubstituteParams, HTTPRequestGroup requestGroup) {
