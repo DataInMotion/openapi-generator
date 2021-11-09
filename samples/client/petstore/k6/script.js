@@ -23,335 +23,209 @@ let apiKey = "TODO_EDIT_THE_API_KEY";
 
 export default function() {
     group("/pet", () => {
-        
         // Request No. 1
         {
           let url = BASE_URL + `/pet`;
           // TODO: edit the parameters of the request body.
           let body = {"id": "long", "category": {"id": "long", "name": "string"}, "name": "string", "photoUrls": "list", "tags": "list", "status": "string"};
-          
           let params = {headers: {"Content-Type": "application/json", "Accept": "application/json"}};
-          
-          
           let request = http.put(url, JSON.stringify(body), params);
-          
-          
-          
            sleep(SLEEP_DURATION);
         }
-        
-        
+
         // Request No. 2
         {
           let url = BASE_URL + `/pet`;
           // TODO: edit the parameters of the request body.
           let body = {"id": "long", "category": {"id": "long", "name": "string"}, "name": "string", "photoUrls": "list", "tags": "list", "status": "string"};
-          
           let params = {headers: {"Content-Type": "application/json", "Accept": "application/json"}};
-          
-          
           let request = http.post(url, JSON.stringify(body), params);
-          
-          
-          
         }
-        
+
     });
     group("/user/{username}", () => {
         let username = 'TODO_EDIT_THE_USERNAME'; // specify value as there is no example value for this parameter in OpenAPI spec
-        
         // Request No. 1
         {
           let url = BASE_URL + `/user/${username}`;
-          
-          
-          
           let request = http.get(url);
-          
           check(request, {
             "successful operation": (r) => r.status === 200
           });
-          
-          
            sleep(SLEEP_DURATION);
         }
-        
-        
+
         // Request No. 2
         {
           let url = BASE_URL + `/user/${username}`;
-          
-          
           let request = http.del(url);
-          
-          
-          
-          
         }
-        
+
     });
     group("/pet/findByStatus", () => {
         let status = 'TODO_EDIT_THE_STATUS'; // specify value as there is no example value for this parameter in OpenAPI spec
-        
         // Request No. 1
         {
           let url = BASE_URL + `/pet/findByStatus?status=${status}`;
-          
-          
-          
           let request = http.get(url);
-          
           check(request, {
             "successful operation": (r) => r.status === 200
           });
-          
-          
         }
-        
+
     });
     group("/user/createWithList", () => {
-        
         // Request No. 1
         {
           let url = BASE_URL + `/user/createWithList`;
-          
           let params = {headers: {"Content-Type": "application/json", "Accept": "application/json"}};
-          
-          
           let request = http.post(url, params);
-          
           check(request, {
             "successful operation": (r) => r.status === 200
           });
-          
-          
         }
-        
+
     });
     group("/pet/{petId}/uploadImage", () => {
         let petId = 'TODO_EDIT_THE_PETID'; // specify value as there is no example value for this parameter in OpenAPI spec
-        
         // Request No. 1
         {
           let url = BASE_URL + `/pet/${petId}/uploadImage`;
           // TODO: edit the parameters of the request body.
           let body = {"additionalMetadata": "string", "file": http.file(open("/path/to/file.bin", "b"), "test.bin")};
-          
           let params = {headers: {"Content-Type": "multipart/form-data", "Accept": "application/json"}};
-          
-          
           let request = http.post(url, JSON.stringify(body), params);
-          
           check(request, {
             "successful operation": (r) => r.status === 200
           });
-          
-          
         }
-        
+
     });
     group("/store/inventory", () => {
-        
         // Request No. 1
         {
           let url = BASE_URL + `/store/inventory`;
-          
-          
-          
           let request = http.get(url);
-          
           check(request, {
             "successful operation": (r) => r.status === 200
           });
-          
-          
         }
-        
+
     });
     group("/user/login", () => {
         let password = 'TODO_EDIT_THE_PASSWORD'; // specify value as there is no example value for this parameter in OpenAPI spec
         let username = 'TODO_EDIT_THE_USERNAME'; // specify value as there is no example value for this parameter in OpenAPI spec
-        
         // Request No. 1
         {
           let url = BASE_URL + `/user/login?username=${username}&password=${password}`;
-          
-          
-          
           let request = http.get(url);
-          
           check(request, {
             "successful operation": (r) => r.status === 200
           });
-          
-          
         }
-        
+
     });
     group("/user", () => {
-        
         // Request No. 1
         {
           let url = BASE_URL + `/user`;
           // TODO: edit the parameters of the request body.
           let body = {"id": "long", "username": "string", "firstName": "string", "lastName": "string", "email": "string", "password": "string", "phone": "string", "userStatus": "integer"};
-          
           let params = {headers: {"Content-Type": "application/json", "Accept": "application/json"}};
-          
-          
           let request = http.post(url, JSON.stringify(body), params);
-          
           check(request, {
             "successful operation": (r) => r.status === 200
           });
-          
-          
         }
-        
+
     });
     group("/user/createWithArray", () => {
-        
         // Request No. 1
         {
           let url = BASE_URL + `/user/createWithArray`;
-          
           let params = {headers: {"Content-Type": "application/json", "Accept": "application/json"}};
-          
-          
           let request = http.post(url, params);
-          
           check(request, {
             "successful operation": (r) => r.status === 200
           });
-          
-          
         }
-        
+
     });
     group("/pet/findByTags", () => {
         let tags = 'TODO_EDIT_THE_TAGS'; // specify value as there is no example value for this parameter in OpenAPI spec
-        
         // Request No. 1
         {
           let url = BASE_URL + `/pet/findByTags?tags=${tags}`;
-          
-          
-          
           let request = http.get(url);
-          
           check(request, {
             "successful operation": (r) => r.status === 200
           });
-          
-          
         }
-        
+
     });
     group("/store/order", () => {
-        
         // Request No. 1
         {
           let url = BASE_URL + `/store/order`;
           // TODO: edit the parameters of the request body.
           let body = {"id": "long", "petId": "long", "quantity": "integer", "shipDate": "date", "status": "string", "complete": "boolean"};
-          
           let params = {headers: {"Content-Type": "application/json", "Accept": "application/json"}};
-          
-          
           let request = http.post(url, JSON.stringify(body), params);
-          
           check(request, {
             "successful operation": (r) => r.status === 200
           });
-          
-          
         }
-        
+
     });
     group("/user/logout", () => {
-        
         // Request No. 1
         {
           let url = BASE_URL + `/user/logout`;
-          
-          
-          
           let request = http.get(url);
-          
           check(request, {
             "successful operation": (r) => r.status === 200
           });
-          
-          
         }
-        
+
     });
     group("/pet/{petId}", () => {
         let petId = 'TODO_EDIT_THE_PETID'; // specify value as there is no example value for this parameter in OpenAPI spec
-        
         // Request No. 1
         {
           let url = BASE_URL + `/pet/${petId}`;
-          
-          
-          
           let request = http.get(url);
-          
           check(request, {
             "successful operation": (r) => r.status === 200
           });
-          
-          
            sleep(SLEEP_DURATION);
         }
-        
-        
+
         // Request No. 2
         {
           let url = BASE_URL + `/pet/${petId}`;
-          
           let params = {headers: {"api_key": `${apiKey}`, "Accept": "application/json"}};
-          
           // this is a DELETE method request - if params are also set, empty body must be passed
           let request = http.del(url, {} , params);
-          
-          
-          
-          
         }
-        
+
     });
     group("/store/order/{orderId}", () => {
         let orderId = 'TODO_EDIT_THE_ORDERID'; // specify value as there is no example value for this parameter in OpenAPI spec
-        
         // Request No. 1
         {
           let url = BASE_URL + `/store/order/${orderId}`;
-          
-          
-          
           let request = http.get(url);
-          
           check(request, {
             "successful operation": (r) => r.status === 200
           });
-          
-          
            sleep(SLEEP_DURATION);
         }
-        
-        
+
         // Request No. 2
         {
           let url = BASE_URL + `/store/order/${orderId}`;
-          
-          
           let request = http.del(url);
-          
-          
-          
-          
         }
-        
+
     });
 }
